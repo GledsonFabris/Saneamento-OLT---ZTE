@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Texto - Ligga</title>
+    <link rel="icon" type="image/png" href="C:\Users\gledson.fabris\OneDrive - Ligga Telecom\Documentos\LIGGA-image-77.png"> <!-- Ícone da Ligga -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 50px; /* Alterar tamanho da logo */
+            margin-right: 10px; /* Espaçamento da logo */
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button.convert {
+            background-color: #007BFF;
+        }
+        button.convert:hover {
+            background-color: #0056b3;
+        }
+        button.clear {
+            background-color: #FF6347;
+        }
+        button.clear:hover {
+            background-color: #cc5140;
+        }
+        button.export {
+            background-color: #28a745;
+        }
+        button.export:hover {
+            background-color: #1e7e34;
+        }
+        .output {
+            margin-top: 10px;
+            white-space: pre-wrap;
+            background: #f1f1f1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="C:\Users\gledson.fabris\OneDrive - Ligga Telecom\Documentos\LIGGA-image-77.png" alt="Logo Ligga"> <!-- Linha onde altera a posição da logo -->
+        <h1>Saneamento OLT - ZTE - LIGGA</h1>
+    </div>
+
+    <p>Insira os dados no formato abaixo e clique em "Converter dados":</p>
+    <p><strong>Exemplo de entrada:</strong></p>
+    <pre>
+olt1-nprpng03,interface gpon_olt-1/1/1:77
+olt1-nprpng03,interface gpon_olt-1/1/11:23
+
+    </pre>
+    <textarea id="input" placeholder="Cole os dados aqui..."></textarea>
+    <button class="convert" onclick="convertText()">Converter</button>
+    <button class="clear" onclick="clearData()">Limpar Dados</button>
+    <button class="export" onclick="exportData()">Exportar para .TXT</button>
+    <h2>Saída:</h2>
+    <div class="output" id="output"></div>
+
+    <script>
+        function convertText() {
+            const input = document.getElementById('input').value.trim();
+            const lines = input.split('\n');
+            let output = '';
+
+            lines.forEach(line => {
+                const [_, interfacePart] = line.split(',');
+                const [interfaceName, onu] = interfacePart.replace('interface ', '').split(':'); // Remove o excesso
+                output += `
+interface ${interfaceName}
+no onu ${onu}
+exit
+                `.trim() + '\n\n';
+            });
+
+            document.getElementById('output').textContent = output.trim();
+        }
+
+        function clearData() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').textContent = '';
+        }
+
+        function exportData() {
+            const output = document.getElementById('output').textContent;
+            if (output.trim() === '') {
+                alert('Nenhum dado para exportar!');
+                return;
+            }
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'output.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
